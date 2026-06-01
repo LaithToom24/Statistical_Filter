@@ -15,22 +15,27 @@ def save_wav(filename, data, sample_rate, base):
     wavfile.write(filename, sample_rate, data_norm)
     print(f"Saved: {filename}")
 
-# Generating the clean sample and analyzing statistics.
-#w = np.linspace(0, np.pi/10, 3)
-#x = sum([np.sin(w*n) for w in w])
+def plot_fft(data, fs, title="Frequency Spectrum", padding=0):
+    data = np.pad(data, (padding//2, padding//2), "constant", constant_values=(0, 0))
+    data_fft = fft.fft(data)
+    data_fft = data_fft[0:len(data)//2]
+    w = np.linspace(0, fs/2, len(data_fft))
+    plt.plot(w, 20*np.log10(np.abs(data_fft)), linewidth=0.75)
+    plt.grid()
+    plt.title(title)
+    plt.xlabel("Frequency (Hz)")
+    plt.ylabel("Amplitude (dB)")
+    plt.xscale("log")
+    plt.savefig(f"{title}.png", dpi=600)
+    print(f"Saved: {title}.png")
+    plt.clf()
+
+# Generating the clean sample and analyzing statistics
 filename = "../AudioData/ARCA23K.audio/429059.wav"
 fs, raw_audio = wavfile.read(filename)
 x = raw_audio / np.max(np.abs(raw_audio))
+
 N = len(x)
-X = fft.fft(x)
-X = X[0:N//2]
-w = np.linspace(0, np.pi, len(X))
-plt.plot(w, 20*np.log10(np.abs(X)), linewidth=0.75)
-plt.grid()
-plt.title("Original Magnitude Spectrum")
-plt.xlabel("Frequency rads/s")
-plt.ylabel("Amplitude (dB)")
-plt.show()
 n = np.arange(N)
 
 xStd = np.std(x)
@@ -162,7 +167,16 @@ print(f"The SINR of the dirty audio is {SINR_v:.2f} dB.")
 print(f"The SINR of the statistically filtered audio is {SINR_z:.2f} dB.")
 print(f"The SINR of the filtered audio is {SINR_y:.2f} dB.")
 print(f"The SINR of the averaged filtered audio is {SINR_y_avg:.2f} dB.")
-print(f"The SINR of the filtered audio without statistical filtering is {SINR_y_noStats:.2f} dB\n.")
+print(f"The SINR of the filtered audio without statistical filtering is {SINR_y_noStats:.2f} dB.\n")
+
+# plotting frequency spectrums
+padding = 10*N
+plot_fft(x, fs, title="Original Spectrum", padding=padding)
+plot_fft(v, fs, title="Noisy Spectrum", padding=padding)
+plot_fft(z, fs, title="Despiked Spectrum", padding=padding)
+plot_fft(y, fs, title="Low-Pass Filtered Spectrum", padding=padding)
+plot_fft(y_avg, fs, title="Averaged Spectrum", padding=padding)
+plot_fft(y_noStats, fs, title="Purely Low-Pass Filtered Spectrum", padding=padding)
 
 base = np.max((np.abs(x), np.abs(v), np.abs(z), np.abs(y), np.abs(y_noStats), np.abs(y_avg)))
 save_wav("original.wav", x, fs, base)
