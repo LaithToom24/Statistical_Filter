@@ -138,9 +138,9 @@ This is a learning project, and there are a few rough edges I'm aware of:
   response droops at the top of the passband, so it can make things sound slightly duller.
   Worth an A/B listen between `filtered.wav` and `filtered_avg.wav` to decide if it's
   actually the better result.
-- **Per-file normalisation.** Each output `.wav` is normalised by its own peak, so the
-  noisy file (whose peak is a ±15 spike) ends up very quiet underneath the clicks. Fine for
-  inspection, but not a fair level match for listening tests.
+- **Global normalisation.** Since I used the maximum value between all of the sequences in
+  order to normalize the data, you might need to increase your volume in order to hear some
+  of the audio files.
 - **Going further.** The remaining noise is Gaussian hiss sitting *inside* the passband,
   and no fixed linear filter can remove that without taking signal with it. The natural
   next step would be signal-adaptive denoising — Wiener filtering, spectral subtraction, or
