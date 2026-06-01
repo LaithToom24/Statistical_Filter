@@ -148,5 +148,5 @@ This is a learning project, and there are a few rough edges I'm aware of:
 
 ## Notes
 
-The test audio comes from the [ARCA23K](https://github.com/scottericb/arca23k) sound-event
+The test audio comes from the [ARCA23K](https://zenodo.org/records/5117901) sound-event
 dataset, but any mono `.wav` will work.
